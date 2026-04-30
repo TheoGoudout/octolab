@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+octoshim/octoshim
+generated-ci.yml
+bridge-logs/
+/tmp/
