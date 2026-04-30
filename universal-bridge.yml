@@ -1,0 +1,79 @@
+# =============================================================================
+# GitLab-to-GitHub Universal CI Bridge
+# =============================================================================
+#
+# Include this file from your project's .gitlab-ci.yml:
+#
+#   include:
+#     - project: 'your-org/octolab'
+#       ref: '1.0.0'
+#       file: 'universal-bridge.yml'
+#
+# Required CI/CD variable (set as masked in GitLab project settings):
+#   GITLAB_PAT: A GitLab Personal Access Token with 'api' scope.
+#
+# Optional override variables (set in your project or pipeline):
+#   BRIDGE_RUNNER_IMAGE      Docker image for the shim runner
+#   BRIDGE_DISPATCHER_IMAGE  Docker image containing dispatcher.py
+#   BRIDGE_WORKFLOW_DIR      Directory to scan for GitHub Actions workflows
+#   BRIDGE_OUTPUT_FILE       Path for the generated child pipeline YAML
+#   BRIDGE_LOG_LEVEL         Log level for octoshim proxy (debug/info/warn)
+# =============================================================================
+
+variables:
+  BRIDGE_RUNNER_IMAGE:
+    value: "octolab/shim-runner:latest"
+    description: "Docker image for the shim runner executor"
+  BRIDGE_DISPATCHER_IMAGE:
+    value: "octolab/bridge-dispatcher:latest"
+    description: "Docker image containing the Python dispatcher"
+  BRIDGE_WORKFLOW_DIR:
+    value: ".github/workflows"
+    description: "Directory containing GitHub Actions workflow YAML files"
+  BRIDGE_OUTPUT_FILE:
+    value: "generated-ci.yml"
+    description: "Output path for the generated dynamic child pipeline"
+  BRIDGE_LOG_LEVEL:
+    value: "info"
+    description: "Log verbosity for the octoshim proxy (debug/info/warn)"
+
+stages:
+  - .pre
+  - bridge-execute
+
+# --------------------------------------------------------------------------- #
+# Stage A: Dispatcher — scan workflows and generate child pipeline YAML
+# --------------------------------------------------------------------------- #
+bridge-dispatch:
+  stage: .pre
+  image: $BRIDGE_DISPATCHER_IMAGE
+  variables:
+    GIT_STRATEGY: fetch
+  script:
+    - python3 /bridge/dispatcher.py
+  artifacts:
+    paths:
+      - $BRIDGE_OUTPUT_FILE
+    expire_in: 2 hours
+    when: always
+  rules:
+    - when: always
+
+# --------------------------------------------------------------------------- #
+# Stage B: Trigger the generated child pipeline
+# --------------------------------------------------------------------------- #
+bridge-execute:
+  stage: bridge-execute
+  trigger:
+    include:
+      - artifact: $BRIDGE_OUTPUT_FILE
+        job: bridge-dispatch
+    strategy: depend
+    forward:
+      variables: true
+      pipeline_variables: true
+  needs:
+    - job: bridge-dispatch
+      artifacts: true
+  rules:
+    - when: on_success
