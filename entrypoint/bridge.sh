@@ -24,7 +24,7 @@ trap 'log "Stopping octoshim (pid ${OCTOSHIM_PID})"; kill "${OCTOSHIM_PID}" 2>/d
 
 # Wait for the proxy to be ready (max 5 s)
 READY=0
-for i in $(seq 1 10); do
+for _ in $(seq 1 10); do
   if curl -sf http://localhost:8080/health >/dev/null 2>&1; then
     READY=1
     break
