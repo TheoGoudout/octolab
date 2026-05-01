@@ -73,9 +73,11 @@ RUN mkdir -p \
 
 # Default act configuration: use the self-hosted runner image for all platforms
 RUN mkdir -p /root/.config/act \
- && printf \
-      '-P ubuntu-latest=catthehacker/ubuntu:act-latest\n-P ubuntu-22.04=catthehacker/ubuntu:act-22.04\n-P ubuntu-20.04=catthehacker/ubuntu:act-20.04\n' \
-      > /root/.config/act/actrc
+    && printf '%s\n' \
+    '-P ubuntu-latest=catthehacker/ubuntu:act-latest' \
+    '-P ubuntu-22.04=catthehacker/ubuntu:act-22.04' \
+    '-P ubuntu-20.04=catthehacker/ubuntu:act-20.04' \
+    > /root/.config/act/actrc
 
 # Install dispatcher Python dependency for the dispatcher image variant
 RUN pip3 install --no-cache-dir --break-system-packages pyyaml==6.0.1
