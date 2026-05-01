@@ -11,7 +11,7 @@ err() { echo "${LOG_PREFIX} ERROR: $*" >&2; }
 # --------------------------------------------------------------------------- #
 # Phase 1 — Token masking and BRIDGE_* env setup
 # --------------------------------------------------------------------------- #
-# shellcheck source=mask-tokens.sh
+# shellcheck source=entrypoint/mask-tokens.sh
 source /entrypoint/mask-tokens.sh
 
 # --------------------------------------------------------------------------- #
