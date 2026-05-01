@@ -1,0 +1,10 @@
+# Minimal example: adopt the octolab bridge with zero other changes.
+#
+# Prerequisites:
+#   1. Set GITLAB_PAT as a masked CI/CD variable in project Settings → CI/CD → Variables
+#   2. Your runner must support Docker-in-Docker (privileged mode enabled)
+
+include:
+  - project: 'your-org/octolab'
+    ref: '1.0.0'
+    file: 'universal-bridge.yml'
