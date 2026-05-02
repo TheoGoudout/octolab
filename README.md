@@ -1,6 +1,6 @@
 # octolab — GitLab-to-GitHub Universal CI Bridge
 
-[![pipeline status](https://gitlab.com/your-org/octolab/badges/main/pipeline.svg)](https://gitlab.com/your-org/octolab/-/pipelines)
+[![pipeline status](https://gitlab.com/TheoGoudout/octolab/badges/main/pipeline.svg)](https://gitlab.com/TheoGoudout/octolab/-/pipelines)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](CHANGELOG.md)
 
@@ -52,7 +52,7 @@ The shim image contains [`nektos/act`](https://github.com/nektos/act) as its exe
 
 ```yaml
 include:
-  - project: 'your-org/octolab'
+  - project: 'octolab/octolab'
     ref: '1.0.0'
     file: 'universal-bridge.yml'
 ```
@@ -85,7 +85,7 @@ Override any variable in your own `.gitlab-ci.yml`:
 
 ```yaml
 include:
-  - project: 'your-org/octolab'
+  - project: 'octolab/octolab'
     ref: '1.0.0'
     file: 'universal-bridge.yml'
 
