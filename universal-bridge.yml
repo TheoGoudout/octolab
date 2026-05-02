@@ -5,7 +5,7 @@
 # Include this file from your project's .gitlab-ci.yml:
 #
 #   include:
-#     - project: 'your-org/octolab'
+#     - project: 'octolab/octolab'
 #       ref: '1.0.0'
 #       file: 'universal-bridge.yml'
 #
@@ -20,22 +20,25 @@
 #   BRIDGE_LOG_LEVEL         Log level for octoshim proxy (debug/info/warn)
 # =============================================================================
 
-variables:
-  BRIDGE_RUNNER_IMAGE:
-    value: "octolab/shim-runner:latest"
-    description: "Docker image for the shim runner executor"
-  BRIDGE_DISPATCHER_IMAGE:
-    value: "octolab/bridge-dispatcher:latest"
-    description: "Docker image containing the Python dispatcher"
-  BRIDGE_WORKFLOW_DIR:
-    value: ".github/workflows"
-    description: "Directory containing GitHub Actions workflow YAML files"
-  BRIDGE_OUTPUT_FILE:
-    value: "generated-ci.yml"
-    description: "Output path for the generated dynamic child pipeline"
-  BRIDGE_LOG_LEVEL:
-    value: "info"
-    description: "Log verbosity for the octoshim proxy (debug/info/warn)"
+spec:
+  inputs:
+    bridge_runner_image:
+      default: "octolab/shim-runner:latest"
+      description: "Docker image for the shim runner executor"
+    bridge_dispatcher_image:
+      default: "octolab/bridge-dispatcher:latest"
+      description: "Docker image containing the Python dispatcher"
+    bridge_workflow_dir:
+      default: ".github/workflows"
+      description: "Directory containing GitHub Actions workflow YAML files"
+    bridge_output_file:
+      default: "generated-ci.yml"
+      description: "Output path for the generated dynamic child pipeline"
+    bridge_log_level:
+      default: "info"
+      description: "Log verbosity for the octoshim proxy (debug/info/warn)"
+
+---
 
 stages:
   - .pre
@@ -46,14 +49,17 @@ stages:
 # --------------------------------------------------------------------------- #
 bridge-dispatch:
   stage: .pre
-  image: $BRIDGE_DISPATCHER_IMAGE
+  image: $[[ inputs.bridge_dispatcher_image ]]
   variables:
     GIT_STRATEGY: fetch
+    # Pass inputs into the environment for the python script to read
+    BRIDGE_WORKFLOW_DIR: $[[ inputs.bridge_workflow_dir ]]
+    BRIDGE_OUTPUT_FILE: $[[ inputs.bridge_output_file ]]
   script:
     - python3 /bridge/dispatcher.py
   artifacts:
     paths:
-      - $BRIDGE_OUTPUT_FILE
+      - $[[ inputs.bridge_output_file ]]
     expire_in: 2 hours
     when: always
   rules:
@@ -64,9 +70,12 @@ bridge-dispatch:
 # --------------------------------------------------------------------------- #
 bridge-execute:
   stage: bridge-execute
+  variables:
+    BRIDGE_RUNNER_IMAGE: $[[ inputs.bridge_runner_image ]]
+    BRIDGE_LOG_LEVEL: $[[ inputs.bridge_log_level ]]
   trigger:
     include:
-      - artifact: $BRIDGE_OUTPUT_FILE
+      - artifact: $[[ inputs.bridge_output_file ]]
         job: bridge-dispatch
     strategy: depend
     forward:
