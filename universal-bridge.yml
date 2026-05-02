@@ -70,7 +70,7 @@ bridge-execute:
         job: bridge-dispatch
     strategy: depend
     forward:
-      variables: true
+      yaml_variables: true
       pipeline_variables: true
   needs:
     - job: bridge-dispatch
