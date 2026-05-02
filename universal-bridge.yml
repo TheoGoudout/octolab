@@ -38,6 +38,8 @@ spec:
       default: "info"
       description: "Log verbosity for the octoshim proxy (debug/info/warn)"
 
+---
+
 stages:
   - .pre
   - bridge-execute
