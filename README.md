@@ -1,6 +1,6 @@
 # octolab — GitLab-to-GitHub Universal CI Bridge
 
-[![pipeline status](https://gitlab.com/TheoGoudout/octolab/badges/main/pipeline.svg)](https://gitlab.com/TheoGoudout/octolab/-/pipelines)
+[![pipeline status](https://gitlab.com/octolab/octolab/badges/main/pipeline.svg)](https://gitlab.com/octolab/octolab/-/pipelines)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](CHANGELOG.md)
 
