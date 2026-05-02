@@ -1,0 +1,17 @@
+# Use a dedicated slim python base
+FROM python:3.14-slim
+
+# Only install the bare essentials for the script
+WORKDIR /app
+
+# Install only the specific library needed
+RUN pip install --no-cache-dir pyyaml==6.0.1
+
+# Copy only the script
+COPY dispatcher/dispatcher.py .
+
+# Run as a non-root user for better security
+RUN useradd -m appuser
+USER appuser
+
+ENTRYPOINT ["python", "dispatcher.py"]
